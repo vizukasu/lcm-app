@@ -13,7 +13,7 @@ function lcm(a, b) {
     return (a * b) / gcd(a, b);
 }
 
-app.get('/:email', (req, res) => {
+app.get('/lcm/:email', (req, res) => {
     const x = Number(req.query.x);
     const y = Number(req.query.y);
 
