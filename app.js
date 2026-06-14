@@ -30,10 +30,10 @@ app.get('/skemetrtalgat_gmail_com', (req, res) => {
         !Number.isInteger(xNum) || !Number.isInteger(yNum) ||
         xNum <= 0 || yNum <= 0
     ) {
-        return res.send('NaN');
+        return res.end('NaN');
     }
 
-    res.send(lcm(xNum, yNum));
+    res.end(lcm(xNum, yNum));
 });
 
 app.listen(PORT, () => {
