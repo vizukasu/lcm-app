@@ -13,22 +13,24 @@ function lcm(a, b) {
     return (a * b) / gcd(a, b);
 }
 
-app.get('/', (req, res) => {
-    const x = req.query.x;
-    const y = req.query.y;
+app.get('/:email', (req, res) => {
+    const x = Number(req.query.x);
+    const y = Number(req.query.y);
 
-    const xNum = Number(x);
-    const yNum = Number(y);
-
-    if (
-        !x || !y ||
-        !Number.isInteger(xNum) || !Number.isInteger(yNum) ||
-        xNum <= 0 || yNum <= 0
-    ) {
+    if (!Number.isInteger(x) || !Number.isInteger(y) || x <= 0 || y <= 0) {
         return res.send('NaN');
     }
 
-    res.send(String(lcm(xNum, yNum)));
+    const gcd = (a, b) => {
+        while (b) {
+            [a, b] = [b, a % b];
+        }
+        return a;
+    };
+
+    const lcm = (a, b) => (a * b) / gcd(a, b);
+
+    res.send(String(lcm(x, y)));
 });
 
 app.listen(PORT, () => {
