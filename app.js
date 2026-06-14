@@ -1,5 +1,5 @@
-const express = require('express');
-const app = express();
+const http = require('http');
+const url = require('url');
 const PORT = process.env.PORT || 3000;
 
 function gcd(a, b) {
@@ -16,26 +16,34 @@ function lcm(a, b) {
     return String(bigA * bigB / bigG);
 }
 
-app.get('/skemetrtalgat_gmail_com', (req, res) => {
-    const x = req.query.x;
-    const y = req.query.y;
+const server = http.createServer((req, res) => {
+    const parsed = url.parse(req.url, true);
+    const x = parsed.query.x;
+    const y = parsed.query.y;
 
     const xNum = Number(x);
     const yNum = Number(y);
 
-    res.setHeader('Content-Type', 'text/plain');
+    let result;
 
     if (
         !x || !y ||
         !Number.isInteger(xNum) || !Number.isInteger(yNum) ||
         xNum <= 0 || yNum <= 0
     ) {
-        return res.end('NaN');
+        result = 'NaN';
+    } else {
+        result = lcm(xNum, yNum);
     }
 
-    res.end(lcm(xNum, yNum));
+    const body = Buffer.from(result, 'utf8');
+    res.writeHead(200, {
+        'Content-Type': 'text/plain',
+        'Content-Length': body.length
+    });
+    res.end(body);
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
