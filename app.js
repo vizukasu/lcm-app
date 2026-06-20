@@ -2,38 +2,46 @@ const http = require('http');
 const url = require('url');
 const PORT = process.env.PORT || 3000;
 
+
+function isNaturalNumberString(s) {
+    if (typeof s !== 'string' || s.length === 0) return false;
+    
+    if (!/^[0-9]+$/.test(s)) return false;
+    
+    const stripped = s.replace(/^0+/, '') || '0';
+    if (stripped === '0') return false; 
+    return true;
+}
+
 function gcd(a, b) {
-    while (b) {
+    while (b > 0n) {
         [a, b] = [b, a % b];
     }
     return a;
 }
 
 function lcm(a, b) {
-    const bigA = BigInt(a);
-    const bigB = BigInt(b);
-    const bigG = BigInt(gcd(a, b));
-    return String(bigA * bigB / bigG);
+    const g = gcd(a, b);
+    return (a * b) / g;
 }
 
 const server = http.createServer((req, res) => {
     const parsed = url.parse(req.url, true);
-    const x = parsed.query.x;
-    const y = parsed.query.y;
-
-    const xNum = Number(x);
-    const yNum = Number(y);
+    const xStr = parsed.query.x;
+    const yStr = parsed.query.y;
 
     let result;
 
-    if (
-        !x || !y ||
-        !Number.isInteger(xNum) || !Number.isInteger(yNum) ||
-        xNum <= 0 || yNum <= 0
-    ) {
+    if (!isNaturalNumberString(xStr) || !isNaturalNumberString(yStr)) {
         result = 'NaN';
     } else {
-        result = lcm(xNum, yNum);
+        try {
+            const xBig = BigInt(xStr);
+            const yBig = BigInt(yStr);
+            result = lcm(xBig, yBig).toString();
+        } catch (e) {
+            result = 'NaN';
+        }
     }
 
     const body = Buffer.from(result, 'utf8');
